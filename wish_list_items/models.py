@@ -43,7 +43,7 @@ class WishItem(models.Model):
                               null=True, blank=True)
 
     visible = models.BooleanField(default=True)
-    item_url = models.URLField(null=True, default=True)
+    item_url = models.URLField(null=True, blank=True)
 
     wish_list = models.ForeignKey(WishList, related_name="items")
 
