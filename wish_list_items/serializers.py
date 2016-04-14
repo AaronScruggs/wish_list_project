@@ -5,8 +5,8 @@ from wish_list_items.models import WishList, WishItem, Pledge
 
 
 class UserSerializer(serializers.ModelSerializer):
-    lists = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    pledges = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    #lists = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    #pledges = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = User
