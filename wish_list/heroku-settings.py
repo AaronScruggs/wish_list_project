@@ -2,14 +2,14 @@ from .settings import *
 
 import dj_database_url
 
-DEBUG=False
+DEBUG = False
 
 ALLOWED_HOSTS=["*"]
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
 
-DATABASES['default'] =  dj_database_url.config()
+DATABASES['default'] = dj_database_url.config()
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
