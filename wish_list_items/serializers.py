@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "pledges", "is_superuser", "username")
+        fields = ("id", "username")
 
 
 class WishListSerializer(serializers.ModelSerializer):
