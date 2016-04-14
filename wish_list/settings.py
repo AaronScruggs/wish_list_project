@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'corsheaders',
     'wish_list_items',
+    'psycopg2',
 ]
 
 MIDDLEWARE_CLASSES = [
