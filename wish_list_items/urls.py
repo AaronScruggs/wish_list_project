@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from rest_framework.authtoken.views import obtain_auth_token
 
 from wish_list_items.views import UserList, UserDetail, WishListCreateList,\
     WishListDetailUpdateDelete, WishItemCreateList, WishItemDetailUpdateDelete,\
@@ -13,4 +14,5 @@ urlpatterns = [
     url(r'^wishitem/(?P<pk>\d+)/$', WishItemDetailUpdateDelete.as_view(), name="detail_wish_item"),
     url(r'^pledge/$', PledgeCreateList.as_view(), name="list_pledges"),
     url(r'^pledge/(?P<pk>\d+)/$', PledgeDetailUpdateDelete.as_view(), name="detail_pledges"),
+    url(r'api-token-auth/$', obtain_auth_token)
 ]

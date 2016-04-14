@@ -2,12 +2,25 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
+
+from rest_framework.authtoken.models import Token
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
 
 
 class WishList(models.Model):
 
     title = models.CharField(max_length=255)
-    deadline = models.DateTimeField()
+    deadline = models.DateField()
+
+    # Turn to false rather than
     active = models.BooleanField(default=True)
 
     user = models.ForeignKey(User, related_name="lists")
@@ -16,7 +29,7 @@ class WishList(models.Model):
 
     @property
     def expired(self):
-        return timezone.now() > self.deadline
+        return timezone.now().date() > self.deadline
 
     def __str__(self):
         return self.title
@@ -30,7 +43,7 @@ class WishItem(models.Model):
                               null=True, blank=True)
 
     visible = models.BooleanField(default=True)
-    item_url = models.URLField()
+    item_url = models.URLField(null=True, default=True)
 
     wish_list = models.ForeignKey(WishList, related_name="items")
 
@@ -71,6 +84,8 @@ class ShippingAddress(models.Model):
     city = models.CharField(max_length=64)
     state = models.CharField(max_length=2)
     zip_code = models.CharField(max_length=5)
+
+    user = models.OneToOneField(User)
 
     def __str__(self):
         return self.address

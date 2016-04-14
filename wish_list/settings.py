@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'wish_list_items',
     'psycopg2',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE_CLASSES = [
