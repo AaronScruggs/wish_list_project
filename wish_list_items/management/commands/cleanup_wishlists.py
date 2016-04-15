@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
         now = timezone.now().date()
         # only bring in expired and active objects.
-        WishList.objects.filter(active__eq=True).filter(deadline__lte=now).update(active=False)
+        WishList.objects.filter(active=True).filter(deadline__lte=now).update(active=False)
 
         # for wish_list in wish_lists:
         #     if wish_list.expired:
