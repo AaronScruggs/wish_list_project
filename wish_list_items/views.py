@@ -4,13 +4,14 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import CreateView
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, \
+    IsAuthenticated
 from wish_list_items.permissions import IsOwnerOrReadOnly
 from django.core.urlresolvers import reverse, reverse_lazy
 
 from wish_list_items.models import WishList, WishItem, Pledge
 from wish_list_items.serializers import UserSerializer, WishListSerializer,\
-    WishItemSerializer, PledgeSerializer
+    WishItemSerializer, PledgeSerializer, PledgeCreationSerializer
 from django.http import HttpResponseBadRequest
 from django.conf import settings
 from wish_list_items.serializers import UserSerializer
@@ -74,34 +75,65 @@ class PledgeDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrReadOnly,)
 
 
-def pledge_payment(request):
+class PledgeCreate(generics.CreateAPIView):
+    serializer_class = PledgeCreationSerializer
+    permission_classes = (IsAuthenticated,)
 
-    stripe.api_key = settings.STRIPE_SECRET_KEY
+    def create(self, request, *args, **kwargs):
 
-    token = request.POST['stripeToken']
-    amount = request.POST['amount'] * 100
+        stripe.api_key = settings.STRIPE_SECRET_KEY
 
-    try:
-        charge = stripe.Charge.create(
-            amount=amount,  # amount in cents, again
-            currency="usd",
-            source=token,
-            description="Wish Item Pledge"
-        )
-    except stripe.error.CardError as e:
-        # The card has been declined
-        # False, e ?
-        return HttpResponseBadRequest()
+        token = request.POST['stripeToken']
+        amount = request.POST['amount'] * 100
 
-    return HttpResponseRedirect(reverse('/'))
+        try:
+            charge = stripe.Charge.create(
+                amount=amount,  # amount in cents, again
+                currency="usd",
+                source=token,
+                description="Wish Item Pledge"
+            )
+
+            # Create pledge here!
+
+        except stripe.error.CardError as e:
+            # The card has been declined
+            # False, e ?
+            return HttpResponseBadRequest()
+
+        return HttpResponseRedirect(reverse('/'))
 
 
+#
+# class RegisterUser(CreateView):
+#
+#     model = User
+#     form_class = UserCreationForm
+#     #template_name = "registration/register.html"
+#     success_url = reverse_lazy("/")
 
-class RegisterUser(CreateView):
-
-    model = User
-    form_class = UserCreationForm
-    #template_name = "registration/register.html"
-    success_url = reverse_lazy("/")
-
+#
+# def pledge_payment(request):
+#
+#     stripe.api_key = settings.STRIPE_SECRET_KEY
+#
+#     token = request.POST['stripeToken']
+#     amount = request.POST['amount'] * 100
+#
+#     try:
+#         charge = stripe.Charge.create(
+#             amount=amount,  # amount in cents, again
+#             currency="usd",
+#             source=token,
+#             description="Wish Item Pledge"
+#         )
+#
+#         # Create pledge here!
+#
+#     except stripe.error.CardError as e:
+#         # The card has been declined
+#         # False, e ?
+#         return HttpResponseBadRequest()
+#
+#     return HttpResponseRedirect(reverse('/'))
 

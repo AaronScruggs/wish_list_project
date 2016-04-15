@@ -15,12 +15,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
-        foo='bar'
         return user
 
 
 class WishListSerializer(serializers.ModelSerializer):
     items = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = WishList
@@ -36,6 +37,16 @@ class WishItemSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class PledgeCreationSerializer(serializers.Serializer):
+    pass
+
+
+
+
+
+
+
+
 class PledgeSerializer(serializers.ModelSerializer):
     wish_item = WishItemSerializer(read_only=True)
     user = UserSerializer(read_only=True)
@@ -43,3 +54,7 @@ class PledgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pledge
         fields = "__all__"
+
+
+
+

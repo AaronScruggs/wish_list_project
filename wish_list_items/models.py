@@ -67,11 +67,10 @@ class WishItem(models.Model):
 class Pledge(models.Model):
 
     amount = models.IntegerField()
+    #charge_id = models.CharField(max_length=128)
 
     user = models.ForeignKey(User, related_name="pledges")
     wish_item = models.ForeignKey(WishItem, related_name="pledges")
-
-    #payment_id = models.IntegerField()
 
     created_time = models.DateTimeField(auto_now_add=True)
 
