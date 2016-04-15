@@ -7,6 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
+        # only bring in expired and active objects.
         wish_lists = WishList.objects.all()
 
         for wish_list in wish_lists:
