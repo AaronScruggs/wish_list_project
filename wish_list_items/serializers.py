@@ -7,13 +7,15 @@ from wish_list_items.models import WishList, WishItem, Pledge
 class UserSerializer(serializers.ModelSerializer):
     lists = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     pledges = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    password = serializers.CharField(max_length=128, write_only=True)
 
     class Meta:
         model = User
-        fields = ("id", "username", "pledges", "lists")
+        fields = ("id", "username", "pledges", "lists", "password")
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
+        foo='bar'
         return user
 
 
