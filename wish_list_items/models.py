@@ -20,7 +20,7 @@ class WishList(models.Model):
     title = models.CharField(max_length=255)
     deadline = models.DateField()
 
-    # Turn to false rather than
+    # Turn to false rather than delete
     active = models.BooleanField(default=True)
 
     user = models.ForeignKey(User, related_name="lists")

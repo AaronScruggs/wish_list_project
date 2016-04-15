@@ -5,7 +5,7 @@ from wish_list_items.models import WishList, WishItem, Pledge
 
 @admin.register(WishList)
 class WishListAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "user")
+    list_display = ("id", "title", "user", "deadline")
 
 
 @admin.register(WishItem)

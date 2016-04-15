@@ -5,12 +5,18 @@ from wish_list_items.models import WishList, WishItem, Pledge
 
 
 class UserSerializer(serializers.ModelSerializer):
-    #lists = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    #pledges = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    lists = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    pledges = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ("id", "username")
+        fields = ("id", "username", "pledges", "lists")
+
+    def create(self, validated_data):
+        user = User(username=validated_data["username"])
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
 
 
 class WishListSerializer(serializers.ModelSerializer):
