@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+
+</head>
+<body>
+
+<br>
+<br>
+
+
+
+
+<form action="{% url 'test_submit' %}" method="POST">
+    {% csrf_token %}
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="pk_test_yP2zizhcaArDimys5HdQvH0B"
+    data-amount="2000"
+    data-name="Demo Site"
+    data-description="2 widgets ($20.00)"
+    data-image="/128x128.png"
+    data-locale="auto">
+  </script>
+</form>
+
+
+
+
+
+
+</body>
+</html>
