@@ -36,12 +36,17 @@ class ShippingAddressDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 
 
 class WishListCreateList(generics.ListCreateAPIView):
-    queryset = WishList.objects.order_by("-created_time")
+
+    # filter for request.user
+    #queryset = WishList.objects.order_by("-created_time")
     serializer_class = WishListSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        return WishList.objects.filter(user=self.request.user).order_by("created_time")
 
 
 class WishListDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
