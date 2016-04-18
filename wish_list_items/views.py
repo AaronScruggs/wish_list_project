@@ -45,6 +45,7 @@ class WishListCreateList(generics.ListCreateAPIView):
 
 
 class WishListDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
+    # override get queryset, filter on request.user
     queryset = WishList.objects.all()
     serializer_class = WishListSerializer
     permission_classes = (IsOwnerOrReadOnly,)
@@ -69,14 +70,14 @@ class WishItemDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 class PledgeCreateList(generics.ListCreateAPIView):
     queryset = Pledge.objects.all()
     serializer_class = PledgeSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    #permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
 
         # serializer.save(user=self.request.user) would be better. I am
         # not sure why it throws an error.
 
-        serializer.save()
+        serializer.save(user=self.request.user)
 
 
 class PledgeDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):

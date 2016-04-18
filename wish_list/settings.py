@@ -146,9 +146,10 @@ REST_FRAMEWORK = {
 
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
+#CORS_ALLOW_CREDENTIALS = True
 
 # remove this:
 LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = reverse_lazy("test")
-#STRIPE_SECRET_KEY = os.environ['STRIPE_SECRET_KEY']
+STRIPE_SECRET_KEY = os.environ['STRIPE_SECRET_KEY']
+
