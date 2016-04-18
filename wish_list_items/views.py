@@ -46,7 +46,9 @@ class WishListAll(generics.ListAPIView):
 
 
 class WishListCreateList(generics.ListCreateAPIView):
-
+    """
+    This endpoint returns all wishlists for the requesting user.
+    """
     serializer_class = WishListSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
@@ -59,7 +61,6 @@ class WishListCreateList(generics.ListCreateAPIView):
 
 
 class WishListDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
-    # override get queryset, filter on request.user
     queryset = WishList.objects.all()
     serializer_class = WishListSerializer
     permission_classes = (IsOwnerOrReadOnly,)

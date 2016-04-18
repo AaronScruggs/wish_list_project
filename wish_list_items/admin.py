@@ -10,7 +10,8 @@ class WishListAdmin(admin.ModelAdmin):
 
 @admin.register(WishItem)
 class WishItemAdmin(admin.ModelAdmin):
-    list_display = ("title", "price", "image", "visible", "item_url", "wish_list")
+    list_display = ("title", "price", "image", "visible", "item_url",
+                    "wish_list")
 
 
 @admin.register(Pledge)

@@ -40,16 +40,13 @@ class WishList(models.Model):
 
 class WishItem(models.Model):
 
-    # image url
-    # image field
-    # item url, for link to amazon
-
     title = models.CharField(max_length=255)
     price = models.IntegerField()
 
-    # Might change to ImageUrlField
     image = models.ImageField(upload_to="wishlist_images/",
                               null=True, blank=True)
+    image_url = models.URLField(null=True, blank=True)
+    item_link = models.URLField(null=True, blank=True)
 
     visible = models.BooleanField(default=True)
     item_url = models.URLField(null=True, blank=True)
@@ -59,7 +56,10 @@ class WishItem(models.Model):
     @property
     def pledged_amount(self):
         total_pledges = self.pledges.aggregate(Sum("amount"))
-        return total_pledges['amount__sum']
+        if total_pledges['amount__sum']:
+            return total_pledges['amount__sum']
+        else:
+            return 0
 
     @property
     def remaining_amount(self):
@@ -93,6 +93,7 @@ class ShippingAddress(models.Model):
     state = models.CharField(max_length=2)
     zip_code = models.CharField(max_length=5)
 
+    # might change to ForeignKey
     user = models.OneToOneField(User)
 
     def __str__(self):
