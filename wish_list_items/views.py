@@ -1,11 +1,13 @@
 from django.contrib.auth.models import User
 from django.views.generic import ListView
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from wish_list_items.models import WishList, WishItem, Pledge, ShippingAddress
 from wish_list_items.permissions import IsOwnerOrReadOnly
-from wish_list_items.serializers import UserSerializer
+from wish_list_items.serializers import UserSerializer, ChargeSerializer
 from wish_list_items.serializers import WishListSerializer,\
     WishItemSerializer, PledgeSerializer, ShippingAddressSerializer
 
@@ -35,10 +37,16 @@ class ShippingAddressDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
+class WishListAll(generics.ListAPIView):
+    """
+    An unfiltered display of all wishlists.
+    """
+    queryset = WishList.objects.all()
+    serializer_class = WishListSerializer
+
+
 class WishListCreateList(generics.ListCreateAPIView):
 
-    # filter for request.user
-    #queryset = WishList.objects.order_by("-created_time")
     serializer_class = WishListSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
@@ -46,7 +54,8 @@ class WishListCreateList(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        return WishList.objects.filter(user=self.request.user).order_by("created_time")
+        return WishList.objects.filter(
+            user=self.request.user).order_by("created_time")
 
 
 class WishListDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
@@ -72,23 +81,25 @@ class WishItemDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwnerOrReadOnly,)
 
 
-class PledgeCreateList(generics.ListCreateAPIView):
+class PledgeList(generics.ListAPIView):
     queryset = Pledge.objects.all()
     serializer_class = PledgeSerializer
-    #permission_classes = (IsAuthenticatedOrReadOnly,)
-
-    def perform_create(self, serializer):
-
-        # serializer.save(user=self.request.user) would be better. I am
-        # not sure why it throws an error.
-
-        serializer.save(user=self.request.user)
 
 
-class PledgeDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
+class PledgeDetail(generics.RetrieveAPIView):
     queryset = Pledge.objects.all()
     serializer_class = PledgeSerializer
-    permission_classes = (IsOwnerOrReadOnly,)
+
+
+class ChargeCreate(APIView):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def post(self, request, format=None):
+        serializer = ChargeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(None, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TestPage(ListView):

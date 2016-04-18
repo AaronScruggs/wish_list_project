@@ -40,6 +40,10 @@ class WishList(models.Model):
 
 class WishItem(models.Model):
 
+    # image url
+    # image field
+    # item url, for link to amazon
+
     title = models.CharField(max_length=255)
     price = models.IntegerField()
 

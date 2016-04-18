@@ -21,14 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class ShippingAddressSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-
-    class Meta:
-        model = ShippingAddress
-        fields = "__all__"
-
-
 class WishListSerializer(serializers.ModelSerializer):
     items = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
@@ -38,6 +30,16 @@ class WishListSerializer(serializers.ModelSerializer):
     class Meta:
         model = WishList
         fields = "__all__"
+
+class ShippingAddressSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = ShippingAddress
+        fields = "__all__"
+
+
+
 
 
 class WishItemSerializer(serializers.ModelSerializer):
@@ -51,23 +53,31 @@ class WishItemSerializer(serializers.ModelSerializer):
 
 
 class PledgeSerializer(serializers.ModelSerializer):
+
     user = UserSerializer(read_only=True)
+    wish_item = WishItemSerializer(read_only=True)
 
     class Meta:
         model = Pledge
-        fields = ("user", "amount")
+        fields = ("amount", "user", "wish_item")
+
+
+class ChargeSerializer(serializers.Serializer):
+    token = serializers.CharField(max_length=60)
+    wish_id = serializers.IntegerField()
+    amount = serializers.IntegerField()
 
     def create(self, validated_data):
 
         stripe.api_key = 'sk_test_0Qpguvhry6396ZdPSX8Y12Sd'
-        amount = int(validated_data["amount"]) * 100
-        token = self._kwargs['data']['stripeToken']
-        user = User.objects.get(pk=self._kwargs['data']['user_id'])
-        wish_item = WishItem.objects.get(pk=self._kwargs['data']['item_id'])
+        amount = int(validated_data["amount"])
+        token = validated_data['stripeToken']
+        user = validated_data['user']
+        wish_item = WishItem.objects.get(validated_data['wish_id'])
 
         try:
             charge = stripe.Charge.create(
-                amount=amount,
+                amount=amount * 100,
                 currency="usd",
                 source=token,
                 description="test charge"
