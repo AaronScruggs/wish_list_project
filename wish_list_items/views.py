@@ -1,25 +1,16 @@
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.views.generic import CreateView
+from django.views.generic import ListView
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, \
-    IsAuthenticated
-from wish_list_items.permissions import IsOwnerOrReadOnly
-from django.core.urlresolvers import reverse, reverse_lazy
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from wish_list_items.models import WishList, WishItem, Pledge, ShippingAddress
-from wish_list_items.serializers import UserSerializer, WishListSerializer,\
-    WishItemSerializer, PledgeSerializer, ShippingAddressSerializer
-from django.http import HttpResponseBadRequest
-from django.conf import settings
+from wish_list_items.permissions import IsOwnerOrReadOnly
 from wish_list_items.serializers import UserSerializer
-from django.views.generic import ListView
-import stripe
+from wish_list_items.serializers import WishListSerializer,\
+    WishItemSerializer, PledgeSerializer, ShippingAddressSerializer
 
 
-class UserList(generics.ListCreateAPIView):
+class UserListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -65,7 +56,8 @@ class WishItemCreateList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
-        serializer.save(wish_list=self.request.wish_list)
+        list_id = self.request.data['wish_list']
+        serializer.save(wish_list=WishList.objects.get(pk=list_id))
 
 
 class WishItemDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
@@ -77,16 +69,14 @@ class WishItemDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 class PledgeCreateList(generics.ListCreateAPIView):
     queryset = Pledge.objects.all()
     serializer_class = PledgeSerializer
-    #permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
-        # serializer.save(wish_item=self.request.wish_item)
-        # serializer.save(user=self.request.user)
 
-        # Assigning them drectly for local testing!
-        serializer.save(wish_item=WishItem.objects.first())
-        serializer.save(user=User.objects.first())  # change from default
-        # foo='bar'
+        # serializer.save(user=self.request.user) would be better. I am
+        # not sure why it throws an error.
+
+        serializer.save()
 
 
 class PledgeDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
@@ -96,6 +86,9 @@ class PledgeDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 
 
 class TestPage(ListView):
+    """
+    This is a page used for testing stripe payments locally. Not for live site.
+    """
     template_name = "wish_list_items/stripe_test.html"
     context_object_name = "items"
     queryset = WishList.objects.all()
@@ -103,29 +96,6 @@ class TestPage(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = 1
-        context['item'] = 1
+        context['item'] = 3
+        context['amount'] = 99
         return context
-
-#
-# def stripe_test(request):
-#
-#     foo = 'bar'
-#
-#     token = request.POST["stripeToken"]
-#
-#     stripe.api_key = 'sk_test_0Qpguvhry6396ZdPSX8Y12Sd'
-#
-#     #amount = int(float(request.POST['amount']) * 100)
-#
-#     try:
-#         charge = stripe.Charge.create(
-#             amount=1000,  # amount in cents, again
-#             currency="usd",
-#             source=token,
-#             description="Donation to chirp"
-#         )
-#     except stripe.error.CardError as e:
-#         # The card has been declined
-#         pass
-#
-#     return HttpResponseRedirect(reverse('list_users'))

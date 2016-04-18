@@ -15,6 +15,14 @@
 
 <form action="{% url 'test_submit' %}" method="POST">
     {% csrf_token %}
+    <label>
+      <span>Amount</span>
+      <input id="amount" type="text" name="amount" value="{{ amount }}">
+        <input id="user_id" type="text" name="user_id" value="{{ user }}">
+        <input id="item_id" type="text" name="item_id" value="{{ item }}">
+    </label>
+
+    <h5>can add field here send as hidden input and amount</h5>
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="pk_test_yP2zizhcaArDimys5HdQvH0B"

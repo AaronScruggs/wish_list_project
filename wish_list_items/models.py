@@ -1,10 +1,11 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum
-from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+
+from datetime import datetime
 
 from rest_framework.authtoken.models import Token
 
@@ -29,7 +30,9 @@ class WishList(models.Model):
 
     @property
     def expired(self):
-        return timezone.now().date() > self.deadline
+        # Added to avoid naive vs aware date comparison.
+        end_date = datetime.combine(self.deadline, datetime.min.time())
+        return datetime.now() > end_date
 
     def __str__(self):
         return self.title
@@ -39,6 +42,8 @@ class WishItem(models.Model):
 
     title = models.CharField(max_length=255)
     price = models.IntegerField()
+
+    # Might change to ImageUrlField
     image = models.ImageField(upload_to="wishlist_images/",
                               null=True, blank=True)
 

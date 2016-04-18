@@ -40,6 +40,7 @@ class WishListSerializer(serializers.ModelSerializer):
 
 
 class WishItemSerializer(serializers.ModelSerializer):
+
     wish_list = WishListSerializer(read_only=True)
     pledges = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
@@ -49,29 +50,29 @@ class WishItemSerializer(serializers.ModelSerializer):
 
 
 class PledgeSerializer(serializers.ModelSerializer):
-    wish_item = WishItemSerializer(read_only=True)
     user = UserSerializer(read_only=True)
-    amount = serializers.IntegerField()
-    charge_id = serializers.CharField(max_length=64)
-    token = serializers.CharField(read_only=True)
 
     class Meta:
         model = Pledge
-        fields = "__all__"
+        fields = ("user", "amount")
 
     def create(self, validated_data):
+
         stripe.api_key = 'sk_test_0Qpguvhry6396ZdPSX8Y12Sd'
-        amount = validated_data["amount"] * 100
+        amount = int(validated_data["amount"]) * 100
+        token = self._kwargs['data']['stripeToken']
+        user = User.objects.get(pk=self._kwargs['data']['user_id'])
+        wish_item = WishItem.objects.get(pk=self._kwargs['data']['item_id'])
 
         try:
             charge = stripe.Charge.create(
                 amount=amount,
                 currency="usd",
-                source=validated_data["token"],
+                source=token,
                 description="test charge"
             )
-            return Pledge.objects.create(amount=amount, charge_id=charge["id"])
+            return Pledge.objects.create(amount=amount, charge_id=charge["id"],
+                                         user=user, wish_item=wish_item)
 
         except stripe.error.CardError as e:
             pass
-

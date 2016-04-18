@@ -1,13 +1,13 @@
 from django.conf.urls import url
 from rest_framework.authtoken.views import obtain_auth_token
 
-from wish_list_items.views import UserList, UserDetail, WishListCreateList,\
+from wish_list_items.views import UserListCreate, UserDetail, WishListCreateList,\
     WishListDetailUpdateDelete, WishItemCreateList, WishItemDetailUpdateDelete,\
-    PledgeCreateList, PledgeDetailUpdateDelete, stripe_test, TestPage,\
+    PledgeCreateList, PledgeDetailUpdateDelete, TestPage,\
     ShippingAddressListCreate, ShippingAddressDetailUpdateDelete
 
 urlpatterns = [
-    url(r'^users/$', UserList.as_view(), name="list_users"),
+    url(r'^users/$', UserListCreate.as_view(), name="list_users"),
     url(r'^users/(?P<pk>\d+)/$', UserDetail.as_view(), name="detail_user"),
     url(r'^address/$', ShippingAddressListCreate.as_view(),
         name="list_address"),
@@ -27,4 +27,3 @@ urlpatterns = [
     url(r'^stripesubmit/$', PledgeCreateList.as_view(), name="test_submit"),
 
 ]
-# stripe_test
