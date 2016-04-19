@@ -28,5 +28,4 @@ urlpatterns = [
     url(r'^charge/$', ChargeCreate.as_view(), name="stripe_charge"),
     url(r'^test/$', TestPage.as_view(), name="test"),
     url(r'^stripesubmit/$', PledgeList.as_view(), name="test_submit"),
-
 ]

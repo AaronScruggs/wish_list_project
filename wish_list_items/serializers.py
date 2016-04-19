@@ -52,8 +52,6 @@ class ShippingAddressSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-
-
 class PledgeSerializer(serializers.ModelSerializer):
     """
     For displaying Pledges.
