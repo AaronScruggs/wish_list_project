@@ -20,14 +20,29 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+class WishItemSerializer(serializers.ModelSerializer):
+    """
+    wish_list is assigned in WishItemCreateList view.
+    """
+    user = UserSerializer(read_only=True)
+    wish_list = serializers.PrimaryKeyRelatedField(read_only=True)
+    pledges = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = WishItem
+        fields = "__all__"
+
+
 class WishListSerializer(serializers.ModelSerializer):
-    items = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    items = WishItemSerializer(many=True, read_only=True)
 
     user = UserSerializer(read_only=True)
 
     class Meta:
         model = WishList
         fields = "__all__"
+
 
 class ShippingAddressSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -37,16 +52,6 @@ class ShippingAddressSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class WishItemSerializer(serializers.ModelSerializer):
-    """
-    wish_list is assigned in WishItemCreateList view.
-    """
-    wish_list = WishListSerializer(read_only=True)
-    pledges = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
-    class Meta:
-        model = WishItem
-        fields = "__all__"
 
 
 class PledgeSerializer(serializers.ModelSerializer):

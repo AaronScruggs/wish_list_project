@@ -79,7 +79,7 @@ class WishItemCreateList(generics.ListCreateAPIView):
 class WishItemDetailUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     queryset = WishItem.objects.all()
     serializer_class = WishItemSerializer
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class PledgeList(generics.ListAPIView):
